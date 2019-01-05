@@ -181,4 +181,9 @@ $(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/audio.mk)
 # Bootanimation
 # $(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/bootanimation.mk)
 
+# Strip the local variable table and the local variable type table to reduce
+# the size of the system image. This has no bearing on stack traces, but will
+# leave less information available via JDWP.
+PRODUCT_MINIMIZE_JAVA_DEBUG_INFO := true
+
 -include $(WORKSPACE)/build_env/image-auto-bits.mk
