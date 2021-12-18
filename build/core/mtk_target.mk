@@ -1,2 +1,2 @@
 # Bring in Mediatek helper macros
-include vendor/potato/build/core/mtk_utils.mk
+include $(CUSTOM_VENDOR_DIR)/build/core/mtk_utils.mk

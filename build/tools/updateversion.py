@@ -10,11 +10,11 @@ def main():
 
     build_num = sys.argv[1]
     data = {}
-    with open("vendor/potato/version.json", "r") as read_file:
+    with open("$(CUSTOM_VENDOR_DIR)/version.json", "r") as read_file:
         data = json.load(read_file)
 
     data['vernum'] = data['vernum'].split('+')[0] + '+' + build_num
-    with open("vendor/potato/version.json", "w") as write_file:
+    with open("$(CUSTOM_VENDOR_DIR)/version.json", "w") as write_file:
         write_file.write(json.dumps(data, indent=8))
 
 

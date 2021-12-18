@@ -6,7 +6,7 @@ import json
 import os
 import subprocess
 
-CACHE_FILE = "out/potato-vars"
+CACHE_FILE = "out/custom-vars"
 
 
 def is_subdir(a, b):
@@ -19,7 +19,7 @@ def get_build_type(target_product):
     build_type = os.environ['BUILD_TYPE'].strip() if 'BUILD_TYPE' in os.environ else ''
     current_device = '_'.join(target_product.split("_")[1:])
     if build_type == 'CHEESY' or build_type == 'MASHED' or build_type == 'SALAD':
-        with open("vendor/potato/devices.json", "r") as read_file:
+        with open("$(CUSTOM_VENDOR_DIR)/devices.json", "r") as read_file:
             devices = json.load(read_file).keys()
             if current_device not in devices:
                 build_type = 'Community'
@@ -78,7 +78,7 @@ def main():
     ensure_path()
     query = sys.argv[1]
     data = {}
-    with open("vendor/potato/version.json", "r") as read_file:
+    with open("$(CUSTOM_VENDOR_DIR)/version.json", "r") as read_file:
         data = json.load(read_file)
 
     target_product = os.environ['TARGET_PRODUCT'] if 'TARGET_PRODUCT' in os.environ else ''

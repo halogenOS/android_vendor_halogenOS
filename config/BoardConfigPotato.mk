@@ -1,2 +1,2 @@
-include vendor/potato/config/BoardConfigKernel.mk
-include vendor/potato/config/BoardConfigSoong.mk
+include $(CUSTOM_VENDOR_DIR)/config/BoardConfigKernel.mk
+include $(CUSTOM_VENDOR_DIR)/config/BoardConfigSoong.mk

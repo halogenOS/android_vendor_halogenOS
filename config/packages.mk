@@ -4,12 +4,12 @@ PRODUCT_PACKAGES += \
 
 # Fries
 #PRODUCT_PACKAGES += \
-#    PotatoFries
+#    CustomFries
 
 # ThemePicker
 PRODUCT_PACKAGES += \
     ThemePicker \
-    PotatoThemesStub
+    CustomThemesStub
 
 # Charger
 PRODUCT_PACKAGES += \
@@ -29,5 +29,5 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     QuickAccessWallet
 
--include vendor/potato-prebuilts/packages/apps/Lawnchair/lawnchair.mk
+-include $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/Lawnchair/lawnchair.mk
 -include packages/apps/Plugins/plugins.mk

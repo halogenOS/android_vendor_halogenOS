@@ -1,6 +1,6 @@
-function __print_potato_functions_help() {
+function __print_custom_functions_help() {
 cat <<EOF
-Additional PotatoROM functions:
+Additional CustomROM functions:
 - cout:            Changes directory to out.
 - mmp:             Builds all of the modules in the current directory and pushes them to the device.
 - mmap:            Builds all of the modules in the current directory and its dependencies, then pushes the package to the device.
@@ -58,7 +58,7 @@ function brunch()
 {
     breakfast $*
     if [ $? -eq 0 ]; then
-        mka potato
+        mka custom
     else
         echo "No such item in brunch menu. Try 'breakfast'"
         return 1
@@ -70,14 +70,8 @@ function breakfast()
 {
     target=$1
     local variant=$2
-    POTATO_DEVICES_ONLY="true"
+    CUSTOM_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
-    for f in `/bin/ls vendor/potato/vendorsetup.sh 2> /dev/null`
-        do
-            echo "including $f"
-            . $f
-        done
-    unset f
 
     if [ $# -eq 0 ]; then
         # No arguments, so let's have the full menu
@@ -88,12 +82,12 @@ function breakfast()
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the Potato model name
+            # This is probably just the Custom model name
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
 
-            lunch potato_$target-$variant
+            lunch custom_$target-$variant
         fi
     fi
     return $?
@@ -104,7 +98,7 @@ alias bib=breakfast
 function eat()
 {
     if [ "$OUT" ] ; then
-        ZIPPATH=`ls -tr "$OUT"/potato-*.zip | tail -1`
+        ZIPPATH=`ls -tr "$OUT"/custom-*.zip | tail -1`
         if [ ! -f $ZIPPATH ] ; then
             echo "Nothing to eat"
             return 1
@@ -118,7 +112,7 @@ function eat()
             done
             echo "Device Found.."
         fi
-        if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD"); then
+        if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD"); then
             # if adbd isn't root we can't write to /cache/recovery/
             adb root
             sleep 1
@@ -134,7 +128,7 @@ EOF
             fi
             rm /tmp/command
         else
-            echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+            echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
         fi
         return $?
     else
@@ -261,14 +255,14 @@ function dddclient()
 function gerritpush()
 {
 
-    GERRIT_URL=review.potatoproject.co;
+    GERRIT_URL=review.customproject.co;
     DEFAULT_BRANCH=frico-release;
     PROJECT_PREFIX=;
     ref=for;
 
     local PROJECT_EXCLUSIONS=(
         "device_qcom_sepolicy"
-        "device_potato_sepolicy"
+        "device_custom_sepolicy"
     );
 
     while getopts "tdb" OPTION; do
@@ -303,9 +297,9 @@ function gerritpush()
     fi
     if (echo $PROJECT | grep -qv "^device") || [[ "${PROJECT_EXCLUSIONS[@]}" =~ "$PROJECT" ]]
     then
-      local PFX="PotatoProject/";
+      local PFX="CustomProject/";
     else
-      local PFX="PotatoDevices/";
+      local PFX="CustomDevices/";
     fi
     cd $c;
     if [[ -z "${GERRIT_USER}" ]]; then
@@ -405,7 +399,7 @@ function installboot()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 > /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD");
+    if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD");
     then
         adb push $OUT/boot.img /cache/
         if [ -e "$OUT/system/lib/modules/*" ];
@@ -420,7 +414,7 @@ function installboot()
         adb shell rm -rf /cache/boot.img
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+        echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
     fi
 }
 
@@ -454,14 +448,14 @@ function installrecovery()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 >> /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD");
+    if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
         adb shell rm -rf /cache/recovery.img
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+        echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
     fi
 }
 
@@ -494,33 +488,33 @@ function extractjni() {
 }
 
 function updatefries() {
-    wget -nv https://github.com/PotatoProject/PotatoFries/releases/latest/download/android-arm.apk -O vendor/potato-prebuilts/packages/apps/PotatoFries/arm/PotatoFries.apk
-    wget -nv https://github.com/PotatoProject/PotatoFries/releases/latest/download/android-arm64.apk -O vendor/potato-prebuilts/packages/apps/PotatoFries/arm64/PotatoFries.apk
-    wget -nv https://github.com/PotatoProject/PotatoFries/releases/latest/download/android-x64.apk -O vendor/potato-prebuilts/packages/apps/PotatoFries/x86_64/PotatoFries.apk
-    extractjni vendor/potato-prebuilts/packages/apps/PotatoFries
-    cd vendor/potato-prebuilts
+    wget -nv https://github.com/CustomProject/CustomFries/releases/latest/download/android-arm.apk -O $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries/arm/CustomFries.apk
+    wget -nv https://github.com/CustomProject/CustomFries/releases/latest/download/android-arm64.apk -O $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries/arm64/CustomFries.apk
+    wget -nv https://github.com/CustomProject/CustomFries/releases/latest/download/android-x64.apk -O $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries/x86_64/CustomFries.apk
+    extractjni $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries
+    cd $(CUSTOM_VENDOR_DIR)-prebuilts
     git add -A
-    git commit -m "prebuilts: Update Fries to v$(curl -sX GET https://raw.githubusercontent.com/PotatoProject/PotatoFries/frico-release/pubspec.yaml | grep version | cut -d : -f 2 | xargs)"
-    git push potato HEAD:frico-release
+    git commit -m "prebuilts: Update Fries to v$(curl -sX GET https://raw.githubusercontent.com/CustomProject/CustomFries/frico-release/pubspec.yaml | grep version | cut -d : -f 2 | xargs)"
+    git push custom HEAD:frico-release
     croot
 }
 
 function updateversion() {
-    ./vendor/potato/build/tools/updateversion.py $1
+    ./$(CUSTOM_VENDOR_DIR)/build/tools/updateversion.py $1
     error=$?
     if [ ${error} -ne 0 ]; then
         exit "${error}"
     fi
-    cd vendor/potato;
+    cd $(CUSTOM_VENDOR_DIR);
     git add -A
-    git commit -m "vendor-potato: version: Update build to $1"
+    git commit -m "vendor-custom: version: Update build to $1"
     gerritpush -d
     echo "Waiting for Gerrit replication to git..."
     local=$(git rev-list HEAD | head -1)
     remote=""
     while [[ "$local" != "$remote" ]]; do
       sleep 5;
-      git fetch potato frico-release 2> /dev/null;
+      git fetch custom frico-release 2> /dev/null;
       local=$(git rev-list HEAD | head -1)
       remote=$(git rev-list FETCH_HEAD | head -1)
     done
@@ -543,8 +537,8 @@ function makerecipe() {
     if [ "$REPO_REMOTE" = "github" ]
     then
         pwd
-        potatoremote
-        git push potato HEAD:refs/heads/'$1'
+        customremote
+        git push custom HEAD:refs/heads/'$1'
     fi
     '
 }
@@ -555,7 +549,7 @@ function mka() {
 
 function mergeaosptag()
 {
-  username=PotatoProject
+  username=CustomProject
   default_branch=frico-release
 
   for var in "$@"
@@ -566,21 +560,21 @@ function mergeaosptag()
   done
 
   whitelist=(
-    device_potato_sepolicy
+    device_custom_sepolicy
     device_qcom_sepolicy
     external_json-c
     external_sony_boringssl-compat
     hardware_libhardware_legacy
-    hardware_potato_interfaces
+    hardware_custom_interfaces
     hardware_qcom_power
     manifest
     packages_apps_DUI
     packages_apps_Lean
     packages_apps_Wedges
-    vendor_potato
+    vendor_custom
     prebuilts_clang_host_linux-x86
     website
-    PotatoBot_tg
+    CustomBot_tg
   )
 
   whitelist_detected=();
@@ -652,7 +646,7 @@ function cmka() {
     if [ ! -z "$1" ]; then
         for i in "$@"; do
             case $i in
-                potato|otapackage|systemimage)
+                custom|otapackage|systemimage)
                     mka installclean
                     mka $i
                     ;;
@@ -681,7 +675,7 @@ function deleteOTA() {
     curl --header "Authorization: Token $OTA_API_USER_TOKEN" \
         --header "Content-Type: application/json" \
         --request DELETE \
-        https://api.potatoproject.co/api/ota/builds/$1/;
+        https://api.customproject.co/api/ota/builds/$1/;
 }
 
 function pushOTA() {
@@ -701,18 +695,18 @@ function pushOTA() {
     done
 
     build_date=$(grep ro\.build\.date\.utc $OUT/system/build.prop | cut -d= -f2);
-    device=$(grep ro\.potato\.device $OUT/system/build.prop | cut -d= -f2);
-    file=$(ls -t ${OUT}/potato_$device-12*);
+    device=$(grep ro\.custom\.device $OUT/system/build.prop | cut -d= -f2);
+    file=$(ls -t ${OUT}/custom_$device-12*);
     md5=$(md5sum $file | awk '{ print $1 }');
     build_type=$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]');
     size=$(stat -c%s $file);
-    version=$(grep ro\.potato\.vernum $OUT/system/build.prop | cut -d= -f2);
+    version=$(grep ro\.custom\.vernum $OUT/system/build.prop | cut -d= -f2);
     if [ -z $version ]; then
-        version=$(grep ro\.potato\.vernum $OUT/vendor/build.prop | cut -d= -f2)
+        version=$(grep ro\.custom\.vernum $OUT/vendor/build.prop | cut -d= -f2)
     fi
-    dish=$(grep ro\.potato\.dish $OUT/system/build.prop | cut -d= -f2);
+    dish=$(grep ro\.custom\.dish $OUT/system/build.prop | cut -d= -f2);
     if [ -z $dish ]; then
-        dish=$(grep ro\.potato\.dish $OUT/vendor/build.prop | cut -d= -f2)
+        dish=$(grep ro\.custom\.dish $OUT/vendor/build.prop | cut -d= -f2)
     fi
     echo $dish
     notes=""
@@ -731,7 +725,7 @@ function pushOTA() {
         --header "Content-Type: application/json" \
         --request POST \
         --data "$data" \
-        https://api.potatoproject.co/api/ota/builds/;
+        https://api.customproject.co/api/ota/builds/;
 }
 
 function repolastsync() {
@@ -783,7 +777,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD") || [ "$FORCE_PUSH" = "true" ];
+    if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD") || [ "$FORCE_PUSH" = "true" ];
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices \
@@ -901,7 +895,7 @@ EOF
     rm -f $OUT/.log
     return 0
     else
-        echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+        echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
     fi
 }
 
@@ -914,13 +908,13 @@ alias cmkap='dopush cmka'
 
 function repopick() {
     T=$(gettop)
-    $T/vendor/potato/build/tools/repopick.py $@
+    $T/$(CUSTOM_VENDOR_DIR)/build/tools/repopick.py $@
 }
 
 function fixup_common_out_dir() {
     common_out_dir=$(get_build_var OUT_DIR)/target/common
     target_device=$(get_build_var TARGET_DEVICE)
-    if [ ! -z $POTATO_FIXUP_COMMON_OUT ]; then
+    if [ ! -z $CUSTOM_FIXUP_COMMON_OUT ]; then
         if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
             mv ${common_out_dir} ${common_out_dir}-${target_device}
             ln -s ${common_out_dir}-${target_device} ${common_out_dir}
@@ -945,7 +939,7 @@ if [ -d $(gettop)/prebuilts/snapdragon-llvm/toolchains ]; then
             export SDCLANG=true
             export SDCLANG_PATH=$(gettop)/prebuilts/snapdragon-llvm/toolchains/llvm-Snapdragon_LLVM_for_Android_4.0/prebuilt/linux-x86_64/bin
             export SDCLANG_PATH_2=$(gettop)/prebuilts/snapdragon-llvm/toolchains/llvm-Snapdragon_LLVM_for_Android_4.0/prebuilt/linux-x86_64/bin
-            export SDCLANG_LTO_DEFS=$(gettop)/vendor/potato/build/core/sdllvm-lto-defs.mk
+            export SDCLANG_LTO_DEFS=$(gettop)/$(CUSTOM_VENDOR_DIR)/build/core/sdllvm-lto-defs.mk
             ;;
     esac
 fi

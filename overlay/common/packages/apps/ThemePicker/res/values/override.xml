@@ -16,5 +16,5 @@
      limitations under the License.
 -->
 <resources>
-    <string name="themes_stub_package" translatable="false">co.potatoproject.stub</string>
+    <string name="themes_stub_package" translatable="false">co.customproject.stub</string>
 </resources>

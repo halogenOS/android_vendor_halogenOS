@@ -1,5 +1,5 @@
 # Bring in Qualcomm helper macros
-include vendor/potato/build/core/qcom_utils.mk
+include $(CUSTOM_VENDOR_DIR)/build/core/qcom_utils.mk
 
 # Platform names
 KONA := kona #SM8250
@@ -140,4 +140,4 @@ ifneq ($(filter $(QSSI_SUPPORTED_PLATFORMS),$(PRODUCT_BOARD_PLATFORM)),)
     PRODUCT_SOONG_NAMESPACES += vendor/qcom/opensource/commonsys-intf/display
 endif
 
-include vendor/potato/build/core/qcom_target.mk
+include $(CUSTOM_VENDOR_DIR)/build/core/qcom_target.mk

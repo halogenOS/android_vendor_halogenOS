@@ -14,14 +14,14 @@
 # limitations under the License.
 
 # -----------------------------------------------------------------
-# Potato OTA update package
+# Custom OTA update package
 
-POTATO_TARGET_PACKAGE := $(PRODUCT_OUT)/$(POTATO_VERSION).zip
+CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(CUSTOM_VERSION).zip
 
-.PHONY: potato
-potato: $(INTERNAL_OTA_PACKAGE_TARGET)
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(POTATO_TARGET_PACKAGE)
-	@echo "Package Complete: $(POTATO_TARGET_PACKAGE)" >&2
+.PHONY: custom
+custom: $(INTERNAL_OTA_PACKAGE_TARGET)
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
+	@echo "Package Complete: $(CUSTOM_TARGET_PACKAGE)" >&2
 	echo "";
-	cat build/make/potato_ascii_logo;
+	cat build/make/custom_ascii_logo;
 	echo "";

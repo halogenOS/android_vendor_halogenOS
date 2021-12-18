@@ -1,11 +1,11 @@
-GET_VERSION := vendor/potato/build/tools/getversion.py
+GET_VERSION := $(CUSTOM_VENDOR_DIR)/build/tools/getversion.py
 $(shell $(GET_VERSION) invalidate)
-POTATO_VERNUM := $(shell $(GET_VERSION) vernum)
-POTATO_DISH := $(shell $(GET_VERSION) dish)
+CUSTOM_VERNUM := $(shell $(GET_VERSION) vernum)
+CUSTOM_DISH := $(shell $(GET_VERSION) dish)
 BUILD_DATE_TIME := $(BUILD_TIME)$(BUILD_DATE)
 BUILD_TYPE := $(shell $(GET_VERSION) buildtype)
-POTATO_BRANDING_VERSION := $(BUILD_TYPE)
-POTATO_VERSION := $(shell $(GET_VERSION) version)
+CUSTOM_BRANDING_VERSION := $(BUILD_TYPE)
+CUSTOM_VERSION := $(shell $(GET_VERSION) version)
 $(shell $(GET_VERSION) write)
 ifeq ($(filter-out Cheesy Mashed Salad, $(BUILD_TYPE)),)
     PRODUCT_PACKAGES += \

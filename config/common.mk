@@ -1,7 +1,7 @@
 ALLOWED_SELINUX_VIOLATORS :=
 
 ifeq ($(PRODUCT_USES_QCOM_HARDWARE),true)
-include vendor/potato/config/ProductConfigQcom.mk
+include $(CUSTOM_VENDOR_DIR)/config/ProductConfigQcom.mk
 endif
 
 PRODUCT_SOONG_NAMESPACES += $(PATHMAP_SOONG_NAMESPACES)
@@ -25,20 +25,20 @@ endif
 
 # Backup Tool
 PRODUCT_COPY_FILES += \
-    vendor/potato/prebuilt/common/bin/backuptool.sh:install/bin/backuptool.sh \
-    vendor/potato/prebuilt/common/bin/backuptool.functions:install/bin/backuptool.functions \
-    vendor/potato/prebuilt/common/bin/50-base.sh:$(TARGET_COPY_OUT_SYSTEM)/addon.d/50-base.sh \
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/bin/backuptool.sh:install/bin/backuptool.sh \
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/bin/backuptool.functions:install/bin/backuptool.functions \
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/bin/50-base.sh:$(TARGET_COPY_OUT_SYSTEM)/addon.d/50-base.sh \
 
 ifneq ($(strip $(AB_OTA_PARTITIONS) $(AB_OTA_POSTINSTALL_CONFIG)),)
 PRODUCT_COPY_FILES += \
-    vendor/potato/prebuilt/common/bin/backuptool_ab.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.sh \
-    vendor/potato/prebuilt/common/bin/backuptool_ab.functions:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.functions \
-    vendor/potato/prebuilt/common/bin/backuptool_postinstall.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_postinstall.sh
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/bin/backuptool_ab.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.sh \
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/bin/backuptool_ab.functions:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.functions \
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/bin/backuptool_postinstall.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_postinstall.sh
 endif
 
 # Bootanimation
 PRODUCT_COPY_FILES += \
-    vendor/potato-prebuilts/bootanimation/bootanimation.zip:$(TARGET_COPY_OUT_SYSTEM)/media/bootanimation.zip
+    $(CUSTOM_VENDOR_DIR)-prebuilts/bootanimation/bootanimation.zip:$(TARGET_COPY_OUT_SYSTEM)/media/bootanimation.zip
 
 PRODUCT_PROPERTY_OVERRIDES += \
     keyguard.no_require_sim=true \
@@ -63,16 +63,16 @@ PRODUCT_RESTRICT_VENDOR_FILES := false
 
 # POSP Common
 PRODUCT_COPY_FILES += \
-    vendor/potato/prebuilt/common/etc/permissions/co.potatoproject.posp.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/co.potatoproject.posp.xml \
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/permissions/co.customproject.posp.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/co.customproject.posp.xml \
 
 # Fries
 PRODUCT_COPY_FILES += \
-    vendor/potato/prebuilt/common/etc/permissions/privapp-permissions-fries.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/privapp-permissions-fries.xml \
-    vendor/potato/prebuilt/common/etc/sysconfig/potatofries-hiddenapi-package-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/potatofries-hiddenapi-package-whitelist.xml
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/permissions/privapp-permissions-fries.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/privapp-permissions-fries.xml \
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/sysconfig/customfries-hiddenapi-package-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/customfries-hiddenapi-package-whitelist.xml
 
 # Fix Google dialer
 PRODUCT_COPY_FILES += \
-    vendor/potato/prebuilt/common/etc/dialer_experience.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/dialer_experience.xml
+    $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/dialer_experience.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/dialer_experience.xml
 
 # Set custom volume steps
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -81,7 +81,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Power whitelist
 PRODUCT_COPY_FILES += \
-    vendor/potato/config/permissions/custom-power-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/custom-power-whitelist.xml
+    $(CUSTOM_VENDOR_DIR)/config/permissions/custom-power-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/custom-power-whitelist.xml
 
 # Clang
 ifeq ($(TARGET_USE_LATEST_CLANG),true)
@@ -107,14 +107,14 @@ PRODUCT_PACKAGES += \
 endif
 
 # Overlays
-PRODUCT_PACKAGE_OVERLAYS += vendor/potato/overlay/common
-PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += vendor/potato/overlay/common
+PRODUCT_PACKAGE_OVERLAYS += $(CUSTOM_VENDOR_DIR)/overlay/common
+PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += $(CUSTOM_VENDOR_DIR)/overlay/common
 
 # Pixel sounds
-include vendor/potato/config/sounds.mk
+include $(CUSTOM_VENDOR_DIR)/config/sounds.mk
 
 # Packages
-include vendor/potato/config/packages.mk
+include $(CUSTOM_VENDOR_DIR)/config/packages.mk
 
 # GMS
 ifeq ($(WITH_GMS), true)
@@ -122,4 +122,4 @@ ifeq ($(WITH_GMS), true)
 endif
 
 # Branding
-include vendor/potato/config/branding.mk
+include $(CUSTOM_VENDOR_DIR)/config/branding.mk
