@@ -1,5 +1,6 @@
 # Copyright (C) 2017 Unlegacy-Android
 # Copyright (C) 2017 The LineageOS Project
+# Copyright (C) 2021 The halogenOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,10 +19,13 @@
 
 CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(CUSTOM_VERSION).zip
 
-.PHONY: custom
-custom: $(INTERNAL_OTA_PACKAGE_TARGET)
+.PHONY: custom_full_package
+custom_full_package: $(INTERNAL_OTA_PACKAGE_TARGET)
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
 	@echo "Package Complete: $(CUSTOM_TARGET_PACKAGE)" >&2
-	echo "";
-	cat build/make/custom_ascii_logo;
-	echo "";
+
+.PHONY: bacon
+bacon: custom_full_package
+
+.PHONY: potato
+potato: custom_full_package

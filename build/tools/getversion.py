@@ -7,6 +7,7 @@ import os
 import subprocess
 
 CACHE_FILE = "out/custom-vars"
+CUSTOM_VENDOR_DIR = os.environ['CUSTOM_VENDOR_DIR'].strip()
 
 
 def is_subdir(a, b):
@@ -18,15 +19,16 @@ def is_subdir(a, b):
 def get_build_type(target_product):
     build_type = os.environ['BUILD_TYPE'].strip() if 'BUILD_TYPE' in os.environ else ''
     current_device = '_'.join(target_product.split("_")[1:])
-    if build_type == 'CHEESY' or build_type == 'MASHED' or build_type == 'SALAD':
-        with open("$(CUSTOM_VENDOR_DIR)/devices.json", "r") as read_file:
+    try:
+        with open("%s/devices.json" % CUSTOM_VENDOR_DIR, "r") as read_file:
             devices = json.load(read_file).keys()
             if current_device not in devices:
                 build_type = 'Community'
             else:
                 build_type = build_type.title()
-    else:
+    except:
         build_type = "Community"
+        pass
     return build_type
 
 
@@ -64,7 +66,7 @@ def handle_query(query, data):
             if query == 'buildtype':
                 return get_build_type(data['product'])
             elif query == 'version':
-                return "{}-{}-{}-{}.v{}.{}".format(data['product'], data['platform'], data['date'], data['dish'], data['vernum'],
+                return "{}-{}-{}-{}.v{}.{}".format(data['product'], data['platform'], data['date'], data['version_name'], data['version'],
                                                   get_build_type(data['product']))
             else:
                 return ''
@@ -78,7 +80,7 @@ def main():
     ensure_path()
     query = sys.argv[1]
     data = {}
-    with open("$(CUSTOM_VENDOR_DIR)/version.json", "r") as read_file:
+    with open("%s/version.json" % CUSTOM_VENDOR_DIR, "r") as read_file:
         data = json.load(read_file)
 
     target_product = os.environ['TARGET_PRODUCT'] if 'TARGET_PRODUCT' in os.environ else ''

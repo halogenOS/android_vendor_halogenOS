@@ -700,15 +700,15 @@ function pushOTA() {
     md5=$(md5sum $file | awk '{ print $1 }');
     build_type=$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]');
     size=$(stat -c%s $file);
-    version=$(grep ro\.custom\.vernum $OUT/system/build.prop | cut -d= -f2);
+    version=$(grep ro\.custom\.version $OUT/system/build.prop | cut -d= -f2);
     if [ -z $version ]; then
-        version=$(grep ro\.custom\.vernum $OUT/vendor/build.prop | cut -d= -f2)
+        version=$(grep ro\.custom\.version $OUT/vendor/build.prop | cut -d= -f2)
     fi
-    dish=$(grep ro\.custom\.dish $OUT/system/build.prop | cut -d= -f2);
-    if [ -z $dish ]; then
-        dish=$(grep ro\.custom\.dish $OUT/vendor/build.prop | cut -d= -f2)
+    version_name=$(grep ro\.custom\.version_name $OUT/system/build.prop | cut -d= -f2);
+    if [ -z $version_name ]; then
+        version_name=$(grep ro\.custom\.version_name $OUT/vendor/build.prop | cut -d= -f2)
     fi
-    echo $dish
+    echo $version_name
     notes=""
 
     if [[ "${USE_NOTES}" == true ]]; then
@@ -719,7 +719,7 @@ function pushOTA() {
 
     url="${clone_repo}/releases/download/$(echo $version | cut -d + -f 1)$tag_sfx/${file##*/}";
 
-    data="{\"build_date\":\"$build_date\", \"device\":\"$device\",\"filename\":\"${file##*/}\",\"md5\":\"$md5\",\"build_type\":\"$build_type\",\"size\":\"$size\",\"url\":\"$url\",\"version\":\"$version\",\"dish\":\"$dish\",\"notes\":\"$notes\"}";
+    data="{\"build_date\":\"$build_date\", \"device\":\"$device\",\"filename\":\"${file##*/}\",\"md5\":\"$md5\",\"build_type\":\"$build_type\",\"size\":\"$size\",\"url\":\"$url\",\"version\":\"$version\",\"version_name\":\"$version_name\",\"notes\":\"$notes\"}";
 
     curl --header "Authorization: Token $OTA_API_USER_TOKEN" \
         --header "Content-Type: application/json" \

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- XOS apps base feature -->
+<permissions>
+    <feature name="org.halogenos" />
+</permissions>
