@@ -9,3 +9,5 @@ if [ -f $XOS_TOOLS_SCRIPT ]; then
     source $XOS_TOOLS_SCRIPT
 fi
 
+export TOP="$(pwd)"
+
