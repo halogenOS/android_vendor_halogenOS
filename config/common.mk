@@ -37,8 +37,8 @@ PRODUCT_COPY_FILES += \
 endif
 
 # Bootanimation
-PRODUCT_COPY_FILES += \
-    $(CUSTOM_VENDOR_DIR)-prebuilts/bootanimation/bootanimation.zip:$(TARGET_COPY_OUT_SYSTEM)/media/bootanimation.zip
+#PRODUCT_COPY_FILES += \
+#    $(CUSTOM_VENDOR_DIR)-prebuilts/bootanimation/bootanimation.zip:$(TARGET_COPY_OUT_SYSTEM)/media/bootanimation.zip
 
 PRODUCT_PROPERTY_OVERRIDES += \
     keyguard.no_require_sim=true \

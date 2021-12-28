@@ -29,5 +29,4 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     QuickAccessWallet
 
--include $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/Lawnchair/lawnchair.mk
 -include packages/apps/Plugins/plugins.mk

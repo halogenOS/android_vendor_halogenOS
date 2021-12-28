@@ -487,18 +487,6 @@ function extractjni() {
     done;
 }
 
-function updatefries() {
-    wget -nv https://github.com/CustomProject/CustomFries/releases/latest/download/android-arm.apk -O $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries/arm/CustomFries.apk
-    wget -nv https://github.com/CustomProject/CustomFries/releases/latest/download/android-arm64.apk -O $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries/arm64/CustomFries.apk
-    wget -nv https://github.com/CustomProject/CustomFries/releases/latest/download/android-x64.apk -O $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries/x86_64/CustomFries.apk
-    extractjni $(CUSTOM_VENDOR_DIR)-prebuilts/packages/apps/CustomFries
-    cd $(CUSTOM_VENDOR_DIR)-prebuilts
-    git add -A
-    git commit -m "prebuilts: Update Fries to v$(curl -sX GET https://raw.githubusercontent.com/CustomProject/CustomFries/frico-release/pubspec.yaml | grep version | cut -d : -f 2 | xargs)"
-    git push custom HEAD:frico-release
-    croot
-}
-
 function updateversion() {
     ./$(CUSTOM_VENDOR_DIR)/build/tools/updateversion.py $1
     error=$?
