@@ -1,6 +1,6 @@
 
 if [ -z "$CUSTOM_VENDOR_DIR" ]; then
-    script_dir=$(dirname "$0")
+    script_dir=$(dirname "${BASH_SOURCE[0]}")
     export CUSTOM_VENDOR_DIR="$script_dir"
 fi
 
