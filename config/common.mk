@@ -121,3 +121,6 @@ endif
 
 # Branding
 include $(CUSTOM_VENDOR_DIR)/config/branding.mk
+
+# General BoardConfig
+include $(CUSTOM_VENDOR_DIR)/config/BoardConfigCustom.mk
