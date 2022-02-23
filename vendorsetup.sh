@@ -4,10 +4,10 @@ if [ -z "$CUSTOM_VENDOR_DIR" ]; then
     # Use a reliable method to get what shell we're on
     SHELLCHK=$(ps -p $$ | grep 00 | sed 's/.* //g')
 
-    if [ "${SHELLCHK}" == "zsh" ]; then
+    if [[ "${SHELLCHK}" == "zsh" ]]; then
         # Variable setting method specific to zsh
         script_dir=$(dirname "$0")
-    elif [ "${SHELLCHK}" == "bash" ]; then
+    elif [[ "${SHELLCHK}" == "bash" ]]; then
         # Variable setting method specific to bash
         script_dir=$(dirname "${BASH_SOURCE[0]}")
     else
