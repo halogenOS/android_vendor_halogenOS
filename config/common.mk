@@ -55,15 +55,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Disable vendor restrictions
 PRODUCT_RESTRICT_VENDOR_FILES := false
 
-# POSP Common
-PRODUCT_COPY_FILES += \
-    $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/permissions/co.customproject.posp.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/co.customproject.posp.xml \
-
-# Fries
-PRODUCT_COPY_FILES += \
-    $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/permissions/privapp-permissions-fries.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/privapp-permissions-fries.xml \
-    $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/sysconfig/customfries-hiddenapi-package-whitelist.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/customfries-hiddenapi-package-whitelist.xml
-
 # Fix Google dialer
 PRODUCT_COPY_FILES += \
     $(CUSTOM_VENDOR_DIR)/prebuilt/common/etc/dialer_experience.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/sysconfig/dialer_experience.xml
