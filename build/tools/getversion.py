@@ -23,11 +23,11 @@ def get_build_type(target_product):
         with open("%s/devices.json" % CUSTOM_VENDOR_DIR, "r") as read_file:
             devices = json.load(read_file).keys()
             if current_device not in devices:
-                build_type = 'Community'
+                build_type = 'Unofficial'
             else:
                 build_type = build_type.title()
     except:
-        build_type = "Community"
+        build_type = "Unofficial"
         pass
     return build_type
 
