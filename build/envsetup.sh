@@ -85,8 +85,11 @@ function breakfast()
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
-
-            lunch aosp_$target-$variant
+            local prefix=
+            if [[ $target != *_* ]]; then
+				prefix=aosp_
+			fi
+            lunch $prefix$target-$variant
         fi
     fi
     return $?
@@ -97,7 +100,7 @@ alias bib=breakfast
 function eat()
 {
     if [ "$OUT" ] ; then
-        ZIPPATH=`ls -tr "$OUT"/custom-*.zip | tail -1`
+        ZIPPATH=`ls -tr "$OUT"/*.zip | tail -1`
         if [ ! -f $ZIPPATH ] ; then
             echo "Nothing to eat"
             return 1
