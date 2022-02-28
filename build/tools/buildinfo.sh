@@ -10,7 +10,6 @@ echo "ro.custom.branding.version=$($GET_VERSION buildtype)"
 echo "ro.custom.buildtype=$($GET_VERSION buildtype)"
 echo "ro.custom.version_name=$($GET_VERSION version_name)"
 echo "ro.custom.version=$($GET_VERSION version)"
-echo "ro.custom.version=$($GET_VERSION version)"
 echo "ro.build.datetime=`$DATE +%s`"
 
 echo "# end custom build properties"
