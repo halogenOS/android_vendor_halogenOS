@@ -36,9 +36,7 @@ if [ -f $XOS_TOOLS_SCRIPT ]; then
     source $XOS_TOOLS_SCRIPT
 fi
 
-if [ -z "$TOP" ]; then
-    export TOP="$(pwd)"
-fi
+export TOP="$(pwd)"
 
 export CUSTOM_VENDOR_DIR="$(realpath --relative-to="$TOP" "$CUSTOM_VENDOR_DIR")"
 
