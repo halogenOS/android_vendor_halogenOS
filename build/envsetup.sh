@@ -86,7 +86,7 @@ function breakfast()
                 variant="userdebug"
             fi
 
-            lunch custom_$target-$variant
+            lunch aosp_$target-$variant
         fi
     fi
     return $?
