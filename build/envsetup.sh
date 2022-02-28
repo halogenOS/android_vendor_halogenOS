@@ -87,7 +87,7 @@ function breakfast()
             fi
             local prefix=
             if [[ $target != *_* ]]; then
-				prefix=aosp_
+				local prefix=aosp_
 			fi
             lunch $prefix$target-$variant
         fi
