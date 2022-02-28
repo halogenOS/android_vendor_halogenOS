@@ -45,10 +45,11 @@ DEBUG = False
 default_manifest = ".repo/manifest.xml"
 
 custom_local_manifest = ".repo/local_manifests/custom_manifest.xml"
-custom_default_revision = "frico-release"
-custom_dependencies = "custom.dependencies"
-org_manifest = "devices"  # leave empty if org is provided in manifest
-org_display = "CustomDevices"  # needed for displaying
+custom_default_revision = "XOS-12.0"
+custom_dependencies = "aosp.dependencies"
+org_manifest = "XOS"  # leave empty if org is provided in manifest
+org_display = "halogenOS"  # needed for displaying
+org_git = "git.halogenos.org"
 
 github_auth = None
 
@@ -67,7 +68,7 @@ def add_auth(g_req):
     global github_auth
     if github_auth is None:
         try:
-            auth = netrc.netrc().authenticators("api.github.com")
+            auth = netrc.netrc().authenticators(org_git)
         except (netrc.NetrcParseError, IOError):
             auth = None
         if auth:
@@ -262,10 +263,9 @@ def detect_revision(repo):
     the branch name if using a different revision
     """
     print("Checking branch info")
-    githubreq = urllib.request.Request(
-        repo['branches_url'].replace('{/branch}', ''))
+    githubreq = urllib.request.Request(repo['_links']['repo_branches'])
     add_auth(githubreq)
-    result = json.loads(urllib.request.urlopen(githubreq).read().decode())
+    result = json.loads(urllib.request.urlopen(githubreq).read().decode(encoding='UTF-8'))
 
     calc_revision = get_revision()
     print("Calculated revision: %s" % calc_revision)
@@ -315,36 +315,38 @@ def main():
         sys.exit()
 
     print("Device {0} not found. Attempting to retrieve device repository from "
-          "{1} Github (http://github.com/{1}).".format(device, org_display))
+          "{1} Organization GitLab (http://${2}/{1}).".format(device, org_display, org_git))
 
     githubreq = urllib.request.Request(
-        "https://api.github.com/search/repositories?"
-        "q={0}+user:{1}+in:name+fork:true".format(device, org_display))
+        "https://{2}/api/v4/groups/{1}/projects?"
+        "search={0}".format(device, org_display, org_git))
     add_auth(githubreq)
 
     repositories = []
 
     try:
-        result = json.loads(urllib.request.urlopen(githubreq).read().decode())
+        result = json.loads(urllib.request.urlopen(githubreq).read().decode(encoding='UTF-8'))
     except urllib.error.URLError:
-        print("Failed to search GitHub")
+        print("Failed to search GitLab")
         sys.exit()
     except ValueError:
-        print("Failed to parse return data from GitHub")
+        print("Failed to parse return data from GitLab")
         sys.exit()
-    for res in result.get('items', []):
+    for res in result:
         repositories.append(res)
 
     for repository in repositories:
         repo_name = repository['name']
 
-        if not (repo_name.startswith("device_") and
+        if not ((repo_name.startswith("android_device_") or
+                 repo_name.startswith("platform_device_") or
+                 repo_name.startswith("device_")) and
                 repo_name.endswith("_" + device)):
             continue
         print("Found repository: %s" % repository['name'])
 
         fallback_branch = detect_revision(repository)
-        manufacturer = repo_name[7:-(len(device)+1)]
+        manufacturer = repo_name[repo_name.index("device_")+7:-(len(device)+1)]
         repo_path = "device/%s/%s" % (manufacturer, device)
         adding = [{'repository': repo_name, 'target_path': repo_path}]
 
@@ -358,8 +360,8 @@ def main():
         print("Done")
         sys.exit()
 
-    print("Repository for %s not found in the %s Github repository list."
-          % (device, org_display))
+    print("Repository for %s not found in the %s %s repository list."
+          % (device, org_display, org_git))
     print("If this is in error, you may need to manually add it to your "
           "%s" % custom_local_manifest)
 
