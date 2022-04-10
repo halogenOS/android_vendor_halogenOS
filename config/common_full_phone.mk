@@ -10,6 +10,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     Stk
 
+# WiFi
+PRODUCT_PACKAGES += \
+    libwpa_client
+
 # Tethering - allow without requiring a provisioning app
 # (for devices that check this)
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
