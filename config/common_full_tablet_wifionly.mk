@@ -1,2 +1,2 @@
 # Inherit common stuff
-$(call inherit-product, vendor/potato/config/common.mk)
+$(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/common.mk)

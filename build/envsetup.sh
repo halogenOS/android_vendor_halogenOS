@@ -1,27 +1,21 @@
-function __print_potato_functions_help() {
+function __print_custom_functions_help() {
 cat <<EOF
-Additional PotatoROM functions:
+Additional custom functions:
 - cout:            Changes directory to out.
 - mmp:             Builds all of the modules in the current directory and pushes them to the device.
 - mmap:            Builds all of the modules in the current directory and its dependencies, then pushes the package to the device.
 - mmmp:            Builds all of the modules in the supplied directories and pushes them to the device.
-- gerritpush:      Push changes to the gerrit code review server.
 - aospremote:      Add git remote for matching AOSP repository.
 - cafremote:       Add git remote for matching CodeAurora repository.
 - mergeaosptag:    Merge specified AOSP tag to all relevant repos.
 - mka:             Builds using SCHED_BATCH on all processors.
 - mkap:            Builds the module(s) using mka and pushes them to the device.
 - cmka:            Cleans and builds using mka.
-- deleteOTA:       Deletes an OTA entry from server API.
-- pushOTA:         Pushes OTA data to server API.
 - repodiff:        Diff 2 different branches or tags within the same repo
 - repolastsync:    Prints date and time of last repo sync.
-- reposync:        Parallel repo sync using ionice and SCHED_BATCH.
-- repopick:        Utility to fetch changes from Gerrit.
 - installboot:     Installs a boot.img to the connected device.
 - installrecovery: Installs a recovery.img to the connected device.
 - extractjni:      Extracts all jni for given project
-- updatefries:     Function to fetch latest Fries APKs and push them to prebuilts
 EOF
 }
 
@@ -58,7 +52,7 @@ function brunch()
 {
     breakfast $*
     if [ $? -eq 0 ]; then
-        mka potato
+        mka bacon
     else
         echo "No such item in brunch menu. Try 'breakfast'"
         return 1
@@ -70,9 +64,9 @@ function breakfast()
 {
     target=$1
     local variant=$2
-    POTATO_DEVICES_ONLY="true"
+    CUSTOM_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
-    for f in `/bin/ls vendor/potato/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls ${CUSTOM_VENDOR_DIR}/vendorsetup.sh 2> /dev/null`
         do
             echo "including $f"
             . $f
@@ -88,12 +82,12 @@ function breakfast()
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the Potato model name
+            # Default buildtype to userdebug if nothing
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
 
-            lunch potato_$target-$variant
+            lunch custom_$target-$variant
         fi
     fi
     return $?
@@ -104,7 +98,7 @@ alias bib=breakfast
 function eat()
 {
     if [ "$OUT" ] ; then
-        ZIPPATH=`ls -tr "$OUT"/potato-*.zip | tail -1`
+        ZIPPATH=`ls -tr "$OUT"/$(basename ${CUSTOM_VENDOR_DIR})-*.zip | tail -1`
         if [ ! -f $ZIPPATH ] ; then
             echo "Nothing to eat"
             return 1
@@ -118,7 +112,7 @@ function eat()
             done
             echo "Device Found.."
         fi
-        if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD"); then
+        if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD"); then
             # if adbd isn't root we can't write to /cache/recovery/
             adb root
             sleep 1
@@ -134,7 +128,7 @@ EOF
             fi
             rm /tmp/command
         else
-            echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+            echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
         fi
         return $?
     else
@@ -258,75 +252,6 @@ function dddclient()
    fi
 }
 
-function gerritpush()
-{
-
-    GERRIT_URL=review.potatoproject.co;
-    DEFAULT_BRANCH=frico_mr1-release;
-    PROJECT_PREFIX=;
-    ref=for;
-
-    local PROJECT_EXCLUSIONS=(
-        "device_qcom_sepolicy"
-        "device_potato_sepolicy"
-    );
-
-    while getopts "tdb" OPTION; do
-      case $OPTION in
-        t)
-                local USE_TOPIC="true"
-                ;;
-        d)
-                ref=heads
-                ;;
-        b)      local CUSTOM_BRANCH="true"
-                ;;
-      esac
-    done
-    if ! git rev-parse --git-dir &> /dev/null
-    then
-        echo "fatal: not a git repository (or any of the parent directories): .git"
-        return 1
-    fi
-    local c=$(pwd);
-    while [ ! -d ".git" ]; do
-      cd ../;
-    done;
-    if [[ ! -z "${PROJECT_PREFIX}" ]]; then
-      PROJECT_PREFIX=$(echo "${PROJECT_PREFIX}_");
-    fi
-    if (pwd -P | grep -qc "manifests");
-    then
-        local PROJECT="manifest";
-    else
-        local PROJECT=${PROJECT_PREFIX}$(echo $(pwd -P | sed -e "s#$ANDROID_BUILD_TOP\/##; s#-caf.*##; s#\/default##") | sed 's/\//_/g');
-    fi
-    if (echo $PROJECT | grep -qv "^device") || [[ "${PROJECT_EXCLUSIONS[@]}" =~ "$PROJECT" ]]
-    then
-      local PFX="PotatoProject/";
-    else
-      local PFX="PotatoDevices/";
-    fi
-    cd $c;
-    if [[ -z "${GERRIT_USER}" ]]; then
-      printf 'Enter gerrit username: ';
-      read -r GERRIT_USER;
-    fi
-    export GERRIT_USER;
-    if [[ "${CUSTOM_BRANCH}" == true ]]; then
-      printf 'Enter branch: ';
-      read -r DEFAULT_BRANCH;
-    fi
-    if [[ "${USE_TOPIC}" == true ]]; then
-      printf 'Enter topic: '
-      read -r topic;
-      git push ssh://${GERRIT_USER}@${GERRIT_URL}:29418/$PFX$PROJECT HEAD:refs/${ref}/${DEFAULT_BRANCH}%topic=${topic};
-    else
-      git push ssh://${GERRIT_USER}@${GERRIT_URL}:29418/$PFX$PROJECT HEAD:refs/${ref}/${DEFAULT_BRANCH};
-    fi
-    unset USE_TOPIC;
-}
-
 function aospremote()
 {
     if ! git rev-parse --git-dir &> /dev/null
@@ -405,7 +330,7 @@ function installboot()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 > /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD");
+    if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD");
     then
         adb push $OUT/boot.img /cache/
         if [ -e "$OUT/system/lib/modules/*" ];
@@ -420,7 +345,7 @@ function installboot()
         adb shell rm -rf /cache/boot.img
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+        echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
     fi
 }
 
@@ -454,14 +379,14 @@ function installrecovery()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 >> /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD");
+    if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
         adb shell rm -rf /cache/recovery.img
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+        echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
     fi
 }
 
@@ -493,166 +418,15 @@ function extractjni() {
     done;
 }
 
-function updatefries() {
-    wget -nv https://github.com/PotatoProject/PotatoFries/releases/latest/download/android-arm.apk -O vendor/potato-prebuilts/packages/apps/PotatoFries/arm/PotatoFries.apk
-    wget -nv https://github.com/PotatoProject/PotatoFries/releases/latest/download/android-arm64.apk -O vendor/potato-prebuilts/packages/apps/PotatoFries/arm64/PotatoFries.apk
-    wget -nv https://github.com/PotatoProject/PotatoFries/releases/latest/download/android-x64.apk -O vendor/potato-prebuilts/packages/apps/PotatoFries/x86_64/PotatoFries.apk
-    extractjni vendor/potato-prebuilts/packages/apps/PotatoFries
-    cd vendor/potato-prebuilts
-    git add -A
-    git commit -m "prebuilts: Update Fries to v$(curl -sX GET https://raw.githubusercontent.com/PotatoProject/PotatoFries/frico_mr1-release/pubspec.yaml | grep version | cut -d : -f 2 | xargs)"
-    git push potato HEAD:frico_mr1-release
-    croot
-}
-
-function updateversion() {
-    ./vendor/potato/build/tools/updateversion.py $1
-    error=$?
-    if [ ${error} -ne 0 ]; then
-        exit "${error}"
-    fi
-    cd vendor/potato;
-    git add -A
-    git commit -m "vendor-potato: version: Update build to $1"
-    gerritpush -d
-    echo "Waiting for Gerrit replication to git..."
-    local=$(git rev-list HEAD | head -1)
-    remote=""
-    while [[ "$local" != "$remote" ]]; do
-      sleep 5;
-      git fetch potato frico_mr1-release 2> /dev/null;
-      local=$(git rev-list HEAD | head -1)
-      remote=$(git rev-list FETCH_HEAD | head -1)
-    done
-    echo "Found change! Update version complete."
-}
-
-function makerecipe() {
-    if [ -z "$1" ]
-    then
-        echo "No branch name provided."
-        return 1
-    fi
-    cd android
-    sed -i s/'default revision=.*'/'default revision="refs\/heads\/'$1'"'/ default.xml
-    git commit -a -m "$1"
-    cd ..
-
-    repo forall -c '
-
-    if [ "$REPO_REMOTE" = "github" ]
-    then
-        pwd
-        potatoremote
-        git push potato HEAD:refs/heads/'$1'
-    fi
-    '
-}
-
 function mka() {
     m -j "$@"
-}
-
-function mergeaosptag()
-{
-  username=PotatoProject
-  default_branch=frico_mr1-release
-
-  for var in "$@"
-  do
-    if [[ "$var" == "-p" ]]; then
-      PUSH=true
-    fi
-  done
-
-  whitelist=(
-    device_potato_sepolicy
-    device_qcom_sepolicy
-    external_json-c
-    external_sony_boringssl-compat
-    hardware_libhardware_legacy
-    hardware_potato_interfaces
-    hardware_qcom_power
-    manifest
-    packages_apps_DUI
-    packages_apps_Lean
-    packages_apps_Wedges
-    vendor_potato
-    prebuilts_clang_host_linux-x86
-    website
-    PotatoBot_tg
-  )
-
-  whitelist_detected=();
-  conflicts=();
-
-  if [ !$(declare -f croot > /dev/null; echo $?) ]; then
-    while [ ! -e './build/envsetup.sh' ]; do
-      cd ../;
-    done;
-    source ./build/envsetup.sh;
-  fi;
-  croot;
-
-  for repo in $(curl -s https://api.github.com/users/${username}/repos\?per_page\=200 \
-    | grep html_url | awk 'NR%2 == 0' | cut -d ':' -f 2-3 | tr -d '",'); do
-  {
-    for clone_repo in ${whitelist[@]}; do
-    {
-      if [ "$(echo $repo | cut -d '/' -f 5)" = "$clone_repo" ]
-      then
-        whitelist_detected+=("$repo");
-        continue 2;
-      fi
-    }
-    done;
-    echo "";
-    echo -e "\e[1;32mUpdating $(echo $repo | cut -d '/' -f 5)...\e[0m";
-    cd $(echo $repo | cut -d '/' -f 5 | sed 's/_/\//g');
-    aospremote;
-    git branch $default_branch;
-    git update-ref refs/heads/$default_branch HEAD;
-    git checkout $default_branch;
-    git pull aosp $1 --no-edit;
-    if [[ $? != 0 ]]; then
-        conflicts+=("$repo");
-    else
-        if [[ "$PUSH" == true ]]; then
-            gerritpush -d;
-        fi
-    fi
-    croot;
-  }
-  done;
-
-  echo "";
-
-  for repo in ${whitelist_detected[@]}; do
-    echo -e "\e[0;36mIgnored whitelisted repo: \e[0m$(echo $repo)";
-  done;
-
-  echo "";
-
-  for repo in ${conflicts[@]}; do
-    echo -e "\e[0;31mCONFLICT: \e[0m$(echo $repo)";
-  done;
-
-  unset PUSH;
-  unset branch;
-  unset clone_repo;
-  unset conflicts;
-  unset remote_name;
-  unset repo;
-  unset username;
-  unset whitelist;
-  unset whitelist_detected;
 }
 
 function cmka() {
     if [ ! -z "$1" ]; then
         for i in "$@"; do
             case $i in
-                potato|otapackage|systemimage)
+                bacon|otapackage|systemimage)
                     mka installclean
                     mka $i
                     ;;
@@ -668,81 +442,11 @@ function cmka() {
     fi
 }
 
-function deleteOTA() {
-    if [[ -z "$OTA_API_USER_TOKEN" ]]; then
-        echo "Please specify OTA_API_USER_TOKEN!"; return 1
-    fi
-    if [[ -z "$1" ]]; then
-        echo "Please provide build id!";
-        echo "Usage: deleteOTA id";
-        echo -e "\tid - the id of the build you'd like to delete\n\tfrom the OTA server";
-    fi
-
-    curl --header "Authorization: Token $OTA_API_USER_TOKEN" \
-        --header "Content-Type: application/json" \
-        --request DELETE \
-        https://api.potatoproject.co/api/ota/builds/$1/;
-}
-
-function pushOTA() {
-    OPTIND=1;
-    if [[ -z "$OTA_API_USER_TOKEN" ]]; then
-        echo "Please specify OTA_API_USER_TOKEN!"; return 1
-    fi
-
-    CUSTOM_URL="false";
-
-    while getopts "t" OPTION; do
-      case $OPTION in
-        t)
-            TEST_BUILD="true"
-            ;;
-      esac
-    done
-
-    build_date=$(grep ro\.build\.date\.utc $OUT/system/build.prop | cut -d= -f2);
-    device=$(grep ro\.potato\.device $OUT/system/build.prop | cut -d= -f2);
-    file=$(ls -t ${OUT}/potato_$device-12*);
-    md5=$(md5sum $file | awk '{ print $1 }');
-    build_type=$(echo $BUILD_TYPE | tr '[:upper:]' '[:lower:]');
-    size=$(stat -c%s $file);
-    version=$(grep ro\.potato\.vernum $OUT/system/build.prop | cut -d= -f2);
-    if [ -z $version ]; then
-        version=$(grep ro\.potato\.vernum $OUT/vendor/build.prop | cut -d= -f2)
-    fi
-    dish=$(grep ro\.potato\.dish $OUT/system/build.prop | cut -d= -f2);
-    if [ -z $dish ]; then
-        dish=$(grep ro\.potato\.dish $OUT/vendor/build.prop | cut -d= -f2)
-    fi
-    echo $dish
-    notes=""
-
-    if [[ "${USE_NOTES}" == true ]]; then
-        if [[ ! (-z "$NOTES") ]]; then
-            notes=$NOTES
-        fi
-    fi
-
-    url="${clone_repo}/releases/download/$(echo $version | cut -d + -f 1)$tag_sfx/${file##*/}";
-
-    data="{\"build_date\":\"$build_date\", \"device\":\"$device\",\"filename\":\"${file##*/}\",\"md5\":\"$md5\",\"build_type\":\"$build_type\",\"size\":\"$size\",\"url\":\"$url\",\"version\":\"$version\",\"dish\":\"$dish\",\"notes\":\"$notes\"}";
-
-    curl --header "Authorization: Token $OTA_API_USER_TOKEN" \
-        --header "Content-Type: application/json" \
-        --request POST \
-        --data "$data" \
-        https://api.potatoproject.co/api/ota/builds/;
-}
-
 function repolastsync() {
     RLSPATH="$ANDROID_BUILD_TOP/.repo/.repo_fetchtimes.json"
     RLSLOCAL=$(date -d "$(stat -c %z $RLSPATH)" +"%e %b %Y, %T %Z")
     RLSUTC=$(date -d "$(stat -c %z $RLSPATH)" -u +"%e %b %Y, %T %Z")
     echo "Last repo sync: $RLSLOCAL / $RLSUTC"
-}
-
-function reposync() {
-    repo sync -j 4 "$@"
 }
 
 function repodiff() {
@@ -783,7 +487,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell getprop ro.potato.device | grep -q "$POTATO_BUILD") || [ "$FORCE_PUSH" = "true" ];
+    if (adb shell getprop ro.custom.device | grep -q "$CUSTOM_BUILD") || [ "$FORCE_PUSH" = "true" ];
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices \
@@ -901,7 +605,7 @@ EOF
     rm -f $OUT/.log
     return 0
     else
-        echo "The connected device does not appear to be $POTATO_BUILD, run away!"
+        echo "The connected device does not appear to be $CUSTOM_BUILD, run away!"
     fi
 }
 
@@ -912,15 +616,10 @@ alias mmmap='dopush mmma'
 alias mkap='dopush mka'
 alias cmkap='dopush cmka'
 
-function repopick() {
-    T=$(gettop)
-    $T/vendor/potato/build/tools/repopick.py $@
-}
-
 function fixup_common_out_dir() {
     common_out_dir=$(get_build_var OUT_DIR)/target/common
     target_device=$(get_build_var TARGET_DEVICE)
-    if [ ! -z $POTATO_FIXUP_COMMON_OUT ]; then
+    if [ ! -z $CUSTOM_FIXUP_COMMON_OUT ]; then
         if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
             mv ${common_out_dir} ${common_out_dir}-${target_device}
             ln -s ${common_out_dir}-${target_device} ${common_out_dir}
@@ -945,7 +644,7 @@ if [ -d $(gettop)/prebuilts/snapdragon-llvm/toolchains ]; then
             export SDCLANG=true
             export SDCLANG_PATH=$(gettop)/prebuilts/snapdragon-llvm/toolchains/llvm-Snapdragon_LLVM_for_Android_4.0/prebuilt/linux-x86_64/bin
             export SDCLANG_PATH_2=$(gettop)/prebuilts/snapdragon-llvm/toolchains/llvm-Snapdragon_LLVM_for_Android_4.0/prebuilt/linux-x86_64/bin
-            export SDCLANG_LTO_DEFS=$(gettop)/vendor/potato/build/core/sdllvm-lto-defs.mk
+            export SDCLANG_LTO_DEFS=$(gettop)/${CUSTOM_VENDOR_DIR}/build/core/sdllvm-lto-defs.mk
             ;;
     esac
 fi

@@ -1,16 +1,14 @@
-GET_VERSION := vendor/potato/build/tools/getversion.py
+GET_VERSION := $(CUSTOM_VENDOR_DIR)/build/tools/getversion.py
 $(shell $(GET_VERSION) invalidate)
-POTATO_VERNUM := $(shell $(GET_VERSION) vernum)
-POTATO_DISH := $(shell $(GET_VERSION) dish)
-BUILD_DATE_TIME := $(BUILD_TIME)$(BUILD_DATE)
+CUSTOM_VERNUM := $(shell $(GET_VERSION) version)
+CUSTOM_VERSION_NAME := $(shell $(GET_VERSION) version_name)
+BUILD_TIME := $(shell date -u +%H%M)
+BUILD_DATE := $(shell date -u +%Y%m%d)
+BUILD_DATE_TIME := $(BUILD_DATE)$(BUILD_TIME)
 BUILD_TYPE := $(shell $(GET_VERSION) buildtype)
-POTATO_BRANDING_VERSION := $(BUILD_TYPE)
-POTATO_VERSION := $(shell $(GET_VERSION) version)
+CUSTOM_BRANDING_VERSION := $(BUILD_TYPE)
+CUSTOM_VERSION := $(shell basename $(CUSTOM_VENDOR_DIR))-$(CUSTOM_VERNUM)-$(BUILD_DATE_TIME)-$(BUILD_TYPE)-$(CUSTOM_BUILD)
 $(shell $(GET_VERSION) write)
-ifeq ($(filter-out Cheesy Mashed Salad, $(BUILD_TYPE)),)
-    PRODUCT_PACKAGES += \
-        Updater
-endif
 
 ifneq ($(SIGNING_KEYS),)
     PRODUCT_DEFAULT_DEV_CERTIFICATE := $(SIGNING_KEYS)/releasekey

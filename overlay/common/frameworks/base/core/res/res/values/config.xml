@@ -70,9 +70,13 @@
         <item>jp.naver.line.android</item>
         <item>com.kakao.talk</item>
         <item>com.discord</item>
+        <item>com.bluecord</item>
         <item>org.thoughtcrime.securesms</item>
         <item>com.groupme.android</item>
         <item>org.telegram.messenger</item>
+        <item>tw.nekomimi.nekogram</item>
+        <item>it.owlgram.android</item>
+        <item>org.nift4.catox</item>
         <item>com.twitter.android</item>
         <item>com.viber.voip</item>
         <item>com.linkedin.android</item>
@@ -83,6 +87,7 @@
         <item>im.vector.app</item>
         <item>cx.ring</item>
         <item>org.briarproject.briar.android</item>
+        <item>com.moez.QKSMS</item>
     </string-array>
 
     <!-- Control the behavior when the user long presses the power button.

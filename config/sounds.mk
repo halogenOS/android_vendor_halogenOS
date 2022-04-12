@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-LOCAL_PATH := vendor/potato-prebuilts/sounds
+LOCAL_PATH := $(CUSTOM_VENDOR_DIR)/prebuilt/common/media/audio
 PRODUCT_COPY_FILES += $(call find-copy-subdir-files,*,$(LOCAL_PATH)/alarms,$(TARGET_COPY_OUT_PRODUCT)/media/audio/alarms)
 PRODUCT_COPY_FILES += $(call find-copy-subdir-files,*,$(LOCAL_PATH)/notifications,$(TARGET_COPY_OUT_PRODUCT)/media/audio/notifications)
 PRODUCT_COPY_FILES += $(call find-copy-subdir-files,*,$(LOCAL_PATH)/ringtones,$(TARGET_COPY_OUT_PRODUCT)/media/audio/ringtones)
@@ -19,6 +19,6 @@ PRODUCT_COPY_FILES += $(call find-copy-subdir-files,*,$(LOCAL_PATH)/ui,$(TARGET_
 
 # Set default ringtone, notification and alarm
 PRODUCT_PRODUCT_PROPERTIES += \
-    ro.config.ringtone=Your_new_adventure.ogg \
-    ro.config.notification_sound=Eureka.ogg \
-    ro.config.alarm_alert=Fresh_start.ogg
+    ro.config.ringtone=Sedna.ogg \
+    ro.config.notification_sound=Popcorn.ogg \
+    ro.config.alarm_alert=Krypton.ogg

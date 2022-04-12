@@ -2,14 +2,9 @@
 PRODUCT_PACKAGES += \
     librsjni
 
-# Fries
-PRODUCT_PACKAGES += \
-    PotatoFries
-
 # ThemePicker
 PRODUCT_PACKAGES += \
-    ThemePicker \
-    PotatoThemesStub
+    ThemePicker
 
 # Charger
 PRODUCT_PACKAGES += \
@@ -29,5 +24,5 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     QuickAccessWallet
 
--include vendor/potato-prebuilts/packages/apps/Lawnchair/lawnchair.mk
+-include vendor/lawnchair/lawnchair.mk
 -include packages/apps/Plugins/plugins.mk
