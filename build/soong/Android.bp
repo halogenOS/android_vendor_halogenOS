@@ -2,7 +2,10 @@
 
 bootstrap_go_package {
     name: "soong-custom-generator",
-    pkgPath: "$(CUSTOM_VENDOR_DIR_BASENAME)/soong/generator",
+
+    // I'll be honest, I didn't want to make this hardcoded, but I have to.
+    // ~ Beru Hinode, 2022
+    pkgPath: "halogenOS/soong/generator",
     deps: [
         "blueprint",
         "blueprint-pathtools",
