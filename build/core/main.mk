@@ -1,1 +1,1 @@
-include $(TOPDIR)vendor/aosp/build/core/main_version.mk
+include $(TOPDIR)$(CUSTOM_VENDOR_DIR)/build/core/main_version.mk

@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # Copyright (C) 2012-2013, The CyanogenMod Project
 # Copyright (C) 2012-2015, SlimRoms Project
 # Copyright (C) 2016-2017, AOSiP
+# Copyright (C) 2018, The Potato Open Sauce Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,12 +42,14 @@ except ImportError:
     urllib.request = urllib2
 
 DEBUG = False
+default_manifest = ".repo/manifest.xml"
 
-custom_local_manifest = ".repo/local_manifests/pixel.xml"
-custom_default_revision =  os.getenv('ROOMSERVICE_DEFAULT_BRANCH', 'twelve')
+custom_local_manifest = ".repo/local_manifests/custom_manifest.xml"
+custom_default_revision = "XOS-12.1"
 custom_dependencies = "aosp.dependencies"
-org_manifest = "pixel-devices"  # leave empty if org is provided in manifest
-org_display = "PixelExperience-Devices"  # needed for displaying
+org_manifest = "XOS"  # leave empty if org is provided in manifest
+org_display = "halogenOS"  # needed for displaying
+org_git = "git.halogenos.org"
 
 github_auth = None
 
@@ -65,7 +68,7 @@ def add_auth(g_req):
     global github_auth
     if github_auth is None:
         try:
-            auth = netrc.netrc().authenticators("api.github.com")
+            auth = netrc.netrc().authenticators(org_git)
         except (netrc.NetrcParseError, IOError):
             auth = None
         if auth:
@@ -94,12 +97,48 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()):
             elem.tail = i
 
+
 def load_manifest(manifest):
     try:
         man = ElementTree.parse(manifest).getroot()
     except (IOError, ElementTree.ParseError):
         man = ElementTree.Element("manifest")
     return man
+
+
+def get_default(manifest=None):
+    m = manifest or load_manifest(default_manifest)
+    d = m.findall('default')[0]
+    return d
+
+
+def get_remote(manifest=None, remote_name=None):
+    m = manifest or load_manifest(default_manifest)
+    if not remote_name:
+        remote_name = get_default(manifest=m).get('remote')
+    remotes = m.findall('remote')
+    for remote in remotes:
+        if remote_name == remote.get('name'):
+            return remote
+
+
+def get_revision(manifest=None, p="build"):
+    return custom_default_revision
+    m = manifest or load_manifest(default_manifest)
+    project = None
+    for proj in m.findall('project'):
+        if proj.get('path').strip('/') == p:
+            project = proj
+            break
+    revision = project.get('revision')
+    if revision:
+        return revision.replace('refs/heads/', '').replace('refs/tags/', '')
+    remote = get_remote(manifest=m, remote_name=project.get('remote'))
+    revision = remote.get('revision')
+    if not revision:
+        return custom_default_revision
+    return revision.replace('refs/heads/', '').replace('refs/tags/', '')
+
 
 def get_from_manifest(device_name):
     if os.path.exists(custom_local_manifest):
@@ -112,8 +151,7 @@ def get_from_manifest(device_name):
 
 
 def is_in_manifest(project_path):
-    man = load_manifest(custom_local_manifest)
-    for local_path in man.findall("project"):
+    for local_path in load_manifest(custom_local_manifest).findall("project"):
         if local_path.get("path") == project_path:
             return True
     return False
@@ -148,10 +186,6 @@ def add_to_manifest(repos, fallback_branch=None):
                     "remote": repo_remote,
                     "name": "%s" % repo_name}
         )
-
-        clone_depth = os.getenv('ROOMSERVICE_CLONE_DEPTH')
-        if clone_depth:
-            project.set('clone-depth', clone_depth)
 
         if repo_branch is not None:
             project.set('revision', repo_branch)
@@ -191,7 +225,7 @@ def fetch_dependencies(repo_path, fallback_branch=None):
             dependencies = json.load(dep_f)
     else:
         dependencies = {}
-        print('%s has no additional dependencies.' % repo_path)
+        debug('Dependencies file not found, bailing out.')
 
     fetch_list = []
     syncable_repos = []
@@ -199,7 +233,8 @@ def fetch_dependencies(repo_path, fallback_branch=None):
     for dependency in dependencies:
         if not is_in_manifest(dependency['target_path']):
             if not dependency.get('branch'):
-                dependency['branch'] = custom_default_revision
+                dependency['branch'] = (get_revision() or
+                                        custom_default_revision)
 
             fetch_list.append(dependency)
             syncable_repos.append(dependency['target_path'])
@@ -228,17 +263,32 @@ def detect_revision(repo):
     the branch name if using a different revision
     """
     print("Checking branch info")
-    githubreq = urllib.request.Request(
-        repo['branches_url'].replace('{/branch}', ''))
+    githubreq = urllib.request.Request(repo['_links']['repo_branches'])
     add_auth(githubreq)
-    result = json.loads(urllib.request.urlopen(githubreq).read().decode())
+    result = json.loads(urllib.request.urlopen(githubreq).read().decode(encoding='UTF-8'))
 
-    print("Calculated revision: %s" % custom_default_revision)
+    calc_revision = get_revision()
+    print("Calculated revision: %s" % calc_revision)
+
+    if has_branch(result, calc_revision):
+        return calc_revision
+
+    fallbacks = os.getenv('ROOMSERVICE_BRANCHES', '').split()
+    for fallback in fallbacks:
+        if has_branch(result, fallback):
+            print("Using fallback branch: %s" % fallback)
+            return fallback
 
     if has_branch(result, custom_default_revision):
+        print("Falling back to custom revision: %s"
+              % custom_default_revision)
         return custom_default_revision
 
-    print("Branch %s not found" % custom_default_revision)
+    print("Branches found:")
+    for branch in result:
+        print(branch['name'])
+    print("Use the ROOMSERVICE_BRANCHES environment variable to "
+          "specify a list of fallback branches.")
     sys.exit()
 
 
@@ -265,36 +315,38 @@ def main():
         sys.exit()
 
     print("Device {0} not found. Attempting to retrieve device repository from "
-          "{1} Github (http://github.com/{1}).".format(device, org_display))
+          "{1} Organization GitLab (http://${2}/{1}).".format(device, org_display, org_git))
 
     githubreq = urllib.request.Request(
-        "https://api.github.com/search/repositories?"
-        "q={0}+user:{1}+in:name+fork:true".format(device, org_display))
+        "https://{2}/api/v4/groups/{1}/projects?"
+        "search={0}".format(device, org_display, org_git))
     add_auth(githubreq)
 
     repositories = []
 
     try:
-        result = json.loads(urllib.request.urlopen(githubreq).read().decode())
+        result = json.loads(urllib.request.urlopen(githubreq).read().decode(encoding='UTF-8'))
     except urllib.error.URLError:
-        print("Failed to search GitHub")
-        sys.exit(1)
+        print("Failed to search GitLab")
+        sys.exit()
     except ValueError:
-        print("Failed to parse return data from GitHub")
-        sys.exit(1)
-    for res in result.get('items', []):
+        print("Failed to parse return data from GitLab")
+        sys.exit()
+    for res in result:
         repositories.append(res)
 
     for repository in repositories:
         repo_name = repository['name']
 
-        if not (repo_name.startswith("device_") and
+        if not ((repo_name.startswith("android_device_") or
+                 repo_name.startswith("platform_device_") or
+                 repo_name.startswith("device_")) and
                 repo_name.endswith("_" + device)):
             continue
         print("Found repository: %s" % repository['name'])
 
         fallback_branch = detect_revision(repository)
-        manufacturer = repo_name[7:-(len(device)+1)]
+        manufacturer = repo_name[repo_name.index("device_")+7:-(len(device)+1)]
         repo_path = "device/%s/%s" % (manufacturer, device)
         adding = [{'repository': repo_name, 'target_path': repo_path}]
 
@@ -308,8 +360,8 @@ def main():
         print("Done")
         sys.exit()
 
-    print("Repository for %s not found in the %s Github repository list."
-          % (device, org_display))
+    print("Repository for %s not found in the %s %s repository list."
+          % (device, org_display, org_git))
     print("If this is in error, you may need to manually add it to your "
           "%s" % custom_local_manifest)
 

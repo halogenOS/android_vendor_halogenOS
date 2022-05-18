@@ -1,4 +1,4 @@
-# Inherit common PixelExperience stuff
-$(call inherit-product, vendor/aosp/config/common.mk)
+# Inherit common stuff
+$(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/common.mk)
 
 PRODUCT_SIZE := full

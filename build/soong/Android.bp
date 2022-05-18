@@ -2,7 +2,7 @@
 
 bootstrap_go_package {
     name: "soong-custom-generator",
-    pkgPath: "aosp/soong/generator",
+    pkgPath: "$(CUSTOM_VENDOR_DIR_BASENAME)/soong/generator",
     deps: [
         "blueprint",
         "blueprint-pathtools",

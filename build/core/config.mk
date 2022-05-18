@@ -1,2 +1,2 @@
 # Rules for QCOM targets
-include $(TOPDIR)vendor/aosp/build/core/qcom_target.mk
+include $(TOPDIR)$(CUSTOM_VENDOR_DIR)/build/core/qcom_target.mk

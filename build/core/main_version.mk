@@ -20,8 +20,8 @@ endif
 
 # Versioning props
 ADDITIONAL_SYSTEM_PROPERTIES  += \
-    org.pixelexperience.version=$(CUSTOM_VERSION_PROP) \
-    org.pixelexperience.version.display=$(CUSTOM_VERSION) \
-    org.pixelexperience.build_date=$(CUSTOM_BUILD_DATE) \
-    org.pixelexperience.build_date_utc=$(CUSTOM_BUILD_DATE_UTC) \
-    org.pixelexperience.build_type=$(CUSTOM_BUILD_TYPE)
+    ro.custom.version=$(CUSTOM_VERSION_PROP) \
+    ro.custom.version.display=$(CUSTOM_VERSION) \
+    ro.custom.build_date=$(CUSTOM_BUILD_DATE) \
+    ro.custom.build_date_utc=$(CUSTOM_BUILD_DATE_UTC) \
+    ro.custom.build_type=$(CUSTOM_BUILD_TYPE)
