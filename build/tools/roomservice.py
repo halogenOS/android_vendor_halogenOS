@@ -305,6 +305,10 @@ def main():
     product = sys.argv[1]
     device = product[product.find("_") + 1:] or product
 
+    if device.find("sdk_phone") == 0:
+        print("SDK Phone, skipping roomservice")
+        sys.exit()
+
     if depsonly:
         repo_path = get_from_manifest(device)
         if repo_path:
