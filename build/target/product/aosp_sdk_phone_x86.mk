@@ -17,7 +17,7 @@ $(call inherit-product, build/target/product/sdk_phone_x86.mk)
 include $(CUSTOM_VENDOR_DIR)/build/target/product/aosp_generic_target.mk
 
 # Enable mainline checking
-PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
+PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS :=
 
 # Overrides
 PRODUCT_NAME := aosp_sdk_phone_x86
