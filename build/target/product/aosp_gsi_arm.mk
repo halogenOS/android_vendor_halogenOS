@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 The LineageOS Project
+# Copyright (C) 2018-2020 The LineageOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
+$(call inherit-product, device/generic/common/gsi_arm.mk)
 
-# Allow building otatools
-TARGET_FORCE_OTA_PACKAGE := true
+include $(CUSTOM_VENDOR_DIR)/build/target/product/aosp_generic_target.mk
+
+PRODUCT_USE_DYNAMIC_PARTITION_SIZE := true
+
+TARGET_NO_KERNEL_OVERRIDE := true
+
+PRODUCT_NAME := aosp_gsi_arm

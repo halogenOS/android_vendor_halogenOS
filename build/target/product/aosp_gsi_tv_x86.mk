@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 The LineageOS Project
+# Copyright (C) 2018-2020 The LineageOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$(call inherit-product, build/target/product/gsi_release.mk)
-$(call inherit-product, device/google/atv/products/atv_base.mk)
-$(call inherit-product, vendor/lineage/config/common_full_tv.mk)
+$(call inherit-product, device/google/atv/products/aosp_tv_x86.mk)
 
-# Allow building otatools
-TARGET_FORCE_OTA_PACKAGE := true
+include $(CUSTOM_VENDOR_DIR)/build/target/product/aosp_generic_tv_target.mk
+
+TARGET_USES_64_BIT_BINDER := true
+
+PRODUCT_NAME := aosp_gsi_tv_x86
+
+PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS :=
+
+PRODUCT_SDK_ADDON_NAME := custom
+PRODUCT_SDK_ADDON_SYS_IMG_SOURCE_PROP := $(LOCAL_PATH)/source.properties

@@ -1,4 +1,4 @@
-# Copyright (C) 2018-2020 The LineageOS Project
+# Copyright (C) 2021 The LineageOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$(call inherit-product, device/google/atv/products/aosp_tv_arm64.mk)
+$(call inherit-product, build/target/product/sdk_phone_x86_64.mk)
 
-include vendor/lineage/build/target/product/lineage_generic_tv_target.mk
+include $(CUSTOM_VENDOR_DIR)/build/target/product/aosp_generic_target.mk
 
-TARGET_NO_KERNEL_OVERRIDE := true
+# Enable mainline checking
+PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
 
-PRODUCT_NAME := lineage_gsi_tv_arm64
-
-PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS :=
+# Overrides
+PRODUCT_NAME := aosp_sdk_phone_x86_64
+PRODUCT_MODEL := LineageOS Android SDK built for x86_64
