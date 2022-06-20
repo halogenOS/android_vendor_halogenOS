@@ -24,4 +24,4 @@ PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
 
 # Overrides
 PRODUCT_NAME := aosp_sdk_tv_arm
-PRODUCT_MODEL := LineageOS Android TV SDK built for ARM
+PRODUCT_MODEL := Custom Android TV SDK built for ARM

@@ -21,4 +21,4 @@ PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
 
 # Overrides
 PRODUCT_NAME := aosp_sdk_phone_x86_64
-PRODUCT_MODEL := LineageOS Android SDK built for x86_64
+PRODUCT_MODEL := Custom Android SDK built for x86_64
