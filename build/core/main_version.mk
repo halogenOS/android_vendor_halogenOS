@@ -20,8 +20,7 @@ endif
 
 # Versioning props
 ADDITIONAL_SYSTEM_PROPERTIES  += \
-    ro.custom.version=$(CUSTOM_VERSION_PROP) \
-    ro.custom.version.display=$(CUSTOM_VERSION) \
+    ro.custom.version=$(CUSTOM_VERSION) \
     ro.custom.build_date=$(CUSTOM_BUILD_DATE) \
     ro.custom.build_date_utc=$(CUSTOM_BUILD_DATE_UTC) \
     ro.custom.build_type=$(CUSTOM_BUILD_TYPE)
