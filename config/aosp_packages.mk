@@ -21,8 +21,6 @@
 #
 
 PRODUCT_PACKAGES += \
-    Browser2 \
-    Calendar \
     DeskClock \
     Gallery2 \
     LatinIME \
