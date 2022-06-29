@@ -25,6 +25,7 @@ PRODUCT_PACKAGES += \
     Calendar \
     DeskClock \
     Gallery2 \
+    LatinIME \
     Music \
     MusicFX \
     SetupWizard \
