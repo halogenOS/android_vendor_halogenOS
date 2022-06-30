@@ -182,6 +182,16 @@ $(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/audio.mk)
 PRODUCT_PACKAGES += \
     ThemePicker \
     CustomThemesStub \
+    CustomBlackTheme \
+    IconShapePebbleOverlay \
+    IconShapeRoundedRectOverlay \
+    IconShapeSquareOverlay \
+    IconShapeSquircleOverlay \
+    IconShapeTaperedRectOverlay \
+    IconShapeTeardropOverlay \
+    IconShapeVesselOverlay \
+    FontLatoOverlay \
+    FontRubikOverlay
 
 # Bootanimation
 # $(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/bootanimation.mk)
