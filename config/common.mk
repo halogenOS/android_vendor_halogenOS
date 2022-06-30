@@ -178,6 +178,11 @@ PRODUCT_PRODUCT_PROPERTIES += \
 # Audio
 $(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/audio.mk)
 
+# Theming
+PRODUCT_PACKAGES += \
+    ThemePicker \
+    CustomThemesStub \
+
 # Bootanimation
 # $(call inherit-product, $(CUSTOM_VENDOR_DIR)/config/bootanimation.mk)
 

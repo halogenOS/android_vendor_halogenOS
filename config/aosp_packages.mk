@@ -27,5 +27,4 @@ PRODUCT_PACKAGES += \
     Music \
     MusicFX \
     SetupWizard \
-    ThemePicker \
     WallpaperPicker2
