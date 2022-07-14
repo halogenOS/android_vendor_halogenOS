@@ -113,4 +113,20 @@
         <item>com.tencent.mm</item>
         <item>org.smssecure.smssecure</item>
     </string-array>
+
+    <!-- Fade out time for screen rotation -->
+    <integer name="config_screen_rotation_fade_out">112</integer>
+
+    <!-- Fade in time for screen rotation -->
+    <integer name="config_screen_rotation_fade_in">120</integer>
+
+    <!-- Fade in delay time for screen rotation -->
+    <integer name="config_screen_rotation_fade_in_delay">80</integer>
+
+    <!-- Total time for 90 degree screen rotation animations -->
+    <integer name="config_screen_rotation_total_90">240</integer>
+
+    <!-- Total time for 180 degree screen rotation animation -->
+    <integer name="config_screen_rotation_total_180">320</integer>
+
 </resources>
