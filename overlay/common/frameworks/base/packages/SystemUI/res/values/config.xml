@@ -41,4 +41,10 @@
     <string-array name="config_statusBarIconsToExclude" translatable="false">
         <item>@*android:string/status_bar_rotate</item>
     </string-array>
+
+    <!-- The duration of the show animation for the volume dialog in milliseconds -->
+    <integer name="config_dialogShowAnimationDurationMs">200</integer>
+
+    <!-- The duration of the hide animation for the volume dialog in milliseconds -->
+    <integer name="config_dialogHideAnimationDurationMs">180</integer>
 </resources>
