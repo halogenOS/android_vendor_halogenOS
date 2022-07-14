@@ -27,4 +27,10 @@
          does not work well, particularly with noisy touchscreens. Note that disabling it may
          increase the rate of unintentional unlocks. -->
     <bool name="config_lockscreenAntiFalsingClassifierEnabled">false</bool>
+
+    <!-- The number of milliseconds before the heads up notification auto-dismisses. -->
+    <integer name="heads_up_notification_decay">3600</integer>
+
+    <!-- Minimum display time for a heads up notification, in milliseconds. -->
+    <integer name="heads_up_notification_minimum_time">1600</integer>
 </resources>
