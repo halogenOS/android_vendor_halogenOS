@@ -20,3 +20,7 @@ PRODUCT_PACKAGES += \
     FontRubikOverlay \
     FontSourceSansProOverlay
 
+# Accents
+PRODUCT_PACKAGES += \
+    CustomBlueAccent
+
